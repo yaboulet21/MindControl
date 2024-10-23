@@ -1,0 +1,38 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+*.log
+logs
+*.pid
+*.seed
+*.pid.lock
+
+# Expo-specific files
+.expo/
+.expo-shared/
+
+# VSCode settings
+.vscode/
+
+# Python-specific
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+
+# Build files
+build/
+dist/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp

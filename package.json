@@ -1,0 +1,18 @@
+{
+  "name": "mindcontrol",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "express": "^4.21.1",
+    "loudness": "^0.4.2",
+    "react-native-zeroconf": "^0.13.8"
+  }
+}

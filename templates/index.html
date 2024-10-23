@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindControl Interface</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Bienvenue sur l'interface MindControl</h1>
+
+    <div>
+        <h2>Scan réseau via Ping</h2>
+        <button onclick="pingScan()">Scanner les adresses IP actives</button>
+        <div id="ping-results">
+            <h3>Adresses IP actives :</h3>
+            <div id="ip-list"></div>
+            <p id="debug-log"></p>
+        </div>
+    </div>
+
+    <div id="port-selection" style="display:none;">
+        <h3>Choisissez un port ouvert :</h3>
+        <div id="port-list"></div>
+        <button onclick="validatePortSelection()">Valider</button>
+    </div>
+
+    <div class="command-section">
+        <h2>Contrôle des commandes multimédia</h2>
+        <button onclick="sendMediaCommand('playpause')">Play/Pause</button>
+        <button onclick="sendMediaCommand('next')">Piste Suivante</button>
+        <button onclick="sendMediaCommand('previous')">Piste Précédente</button>
+
+        <h3>Réglage de la luminosité</h3>
+        <input type="range" min="0" max="100" value="50" id="brightness-slider">
+        
+        <h3>Réglage du volume</h3>
+        <input type="range" min="0" max="100" value="50" id="volume-slider">
+    </div>
+
+    <script src="/static/scripts/mindcontrol.js" defer></script>
+</body>
+</html>
