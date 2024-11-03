@@ -1,6 +1,6 @@
-from flask import Flask, jsonify, request
-from network_utils.ping_scan import scan_network  # Garde ton module réseau en place
-from media_controls.multimedia_controls import control_media  # Importer la fonction de contrôle multimédia
+from flask import Flask, jsonify, request, render_template
+from network_utils.ping_scan import scan_network  # Utilisation de ping_scan pour le scan réseau
+from media_controls.multimedia_controls import control_media  # Contrôle multimédia
 import socket
 import logging
 import concurrent.futures  # Pour le multi-threading
@@ -46,11 +46,17 @@ def scan_ports(ip, ports_to_scan=common_ports, limit=3):
                 logging.error(f"Erreur lors du traitement des résultats du port {port} : {e}")
     return open_ports
 
-@app.route('/ping-scan', methods=['GET'])
-def ping_scan():
-    logging.info("Début du scan réseau.")
+# Route pour l'interface principale
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# API pour le Scan Réseau (ping-scan)
+@app.route('/api/ping-scan', methods=['GET'])
+def api_ping_scan():
+    logging.info("Début du scan réseau via l'API.")
     try:
-        active_ips = scan_network()  # Utilise ton module réseau
+        active_ips = scan_network()  # Utilisation de la fonction de scan réseau
         results = []
 
         for device in active_ips:

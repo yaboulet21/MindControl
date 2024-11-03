@@ -6,16 +6,16 @@ let selectedPort = null;
 function pingScan() {
     console.log("Début du scan des adresses IP...");
 
-    fetch('/ping-scan')
+    fetch('/api/ping-scan')  // Mise à jour de l'URL de l'API
         .then(response => response.json())
         .then(data => {
-            console.log("Données reçues :", data);
+            console.log("Données reçues du scan réseau :", data);
             displayIPList(data);
         })
         .catch(error => console.error('Erreur lors du scan réseau :', error));
 }
 
-// Fonction pour afficher la liste des IPs dans le HTML
+// Fonction pour afficher la liste des IPs et des ports dans le HTML
 function displayIPList(data) {
     const ipListDiv = document.getElementById('ip-list');
     ipListDiv.innerHTML = '';  // Vide la liste précédente
@@ -32,7 +32,7 @@ function displayIPList(data) {
         radio.type = 'radio';
         radio.value = device.ip;
         radio.name = 'ip';
-        radio.onclick = () => selectIP(device.ip);
+        radio.onclick = () => selectIP(device.ip, device.open_ports);
 
         const label = document.createElement('label');
         label.textContent = `${device.ip} - ${device.device_name}`;
@@ -43,32 +43,29 @@ function displayIPList(data) {
     });
 }
 
-// Fonction pour sélectionner une IP et scanner les ports ouverts
-function selectIP(ip) {
+// Fonction pour sélectionner une IP et afficher les ports ouverts associés
+function selectIP(ip, open_ports) {
     selectedIP = ip;
-    console.log(`IP sélectionnée : ${selectedIP}`);
+    selectedPort = null;  // Reset du port sélectionné
+    console.log(`IP sélectionnée : ${selectedIP}, Ports disponibles : ${open_ports}`);
 
-    // Récupérer les ports pour cette IP
-    fetch(`/scan-ports/${ip}`)
-        .then(response => response.json())
-        .then(data => {
-            const portListDiv = document.getElementById('port-list');
-            portListDiv.innerHTML = '';  // Effacer la liste précédente
-            data.forEach(port => {
-                const radio = document.createElement('input');
-                radio.type = 'radio';
-                radio.value = port;
-                radio.name = 'port';
-                radio.onclick = () => selectedPort = port;
-                const label = document.createElement('label');
-                label.textContent = `Port : ${port}`;
-                portListDiv.appendChild(radio);
-                portListDiv.appendChild(label);
-                portListDiv.appendChild(document.createElement('br'));
-            });
-            document.getElementById('port-selection').style.display = 'block';
-        })
-        .catch(error => console.error('Erreur lors du scan des ports :', error));
+    const portListDiv = document.getElementById('port-list');
+    portListDiv.innerHTML = '';  // Effacer la liste précédente
+
+    open_ports.forEach(port => {
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.value = port;
+        radio.name = 'port';
+        radio.onclick = () => selectedPort = port;
+        
+        const label = document.createElement('label');
+        label.textContent = `Port : ${port}`;
+        portListDiv.appendChild(radio);
+        portListDiv.appendChild(label);
+        portListDiv.appendChild(document.createElement('br'));
+    });
+    document.getElementById('port-selection').style.display = 'block';
 }
 
 // Fonction pour valider la sélection d'IP et de port
@@ -103,8 +100,8 @@ function sendMediaCommand(command) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             command: command,
-            ip: selectedIP,  // Transmettre l'IP sélectionnée
-            port: selectedPort  // Transmettre le port sélectionné
+            ip: selectedIP,
+            port: selectedPort
         })
     })
     .then(response => response.json())
@@ -118,26 +115,26 @@ function sendMediaCommand(command) {
     .catch(error => console.error('Erreur lors de l\'envoi de la commande multimédia:', error));
 }
 
-// Fonction pour régler la luminosité en temps réel (automatiquement à chaque changement)
+// Fonction pour régler la luminosité en temps réel
 document.getElementById('brightness-slider').addEventListener('input', function() {
     const value = this.value;
     fetch('/control', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ command: 'brightness', value: value })
+        body: JSON.stringify({ command: 'set_brightness', value: value })  // Correction ici
     })
     .then(response => response.json())
     .then(data => console.log('Réglage de la luminosité appliqué:', data))
     .catch(error => console.error('Erreur lors du réglage de la luminosité:', error));
 });
 
-// Fonction pour régler le volume en temps réel (automatiquement à chaque changement)
+// Fonction pour régler le volume en temps réel
 document.getElementById('volume-slider').addEventListener('input', function() {
     const value = this.value;
     fetch('/control', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ command: 'volume', value: value })
+        body: JSON.stringify({ command: 'set_volume', value: value })  // Correction ici
     })
     .then(response => response.json())
     .then(data => console.log('Réglage du volume appliqué:', data))

@@ -27,23 +27,27 @@ def control_media(command, value=None, ip=None, port=None):
             logging.info("Commande previous exécutée.")
         
         elif command == "set_volume" and value is not None:
-            # Initialiser COM
-            CoInitialize()
-
             try:
-                # Utilisation de pycaw pour régler directement le volume via l'API Windows
-                devices = AudioUtilities.GetSpeakers()
-                interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-                volume = interface.QueryInterface(IAudioEndpointVolume)
+                # Convertir `value` en float au cas où il serait reçu comme chaîne
+                volume_level_normalized = float(value) / 100
 
-                # Conversion de la valeur du slider en une valeur entre 0.0 et 1.0 pour pycaw
-                volume_level_normalized = value / 100
-                volume.SetMasterVolumeLevelScalar(volume_level_normalized, None)
+                # Initialiser COM
+                CoInitialize()
 
-                logging.info(f"Volume réglé à {value}%")
-            finally:
-                # Libérer COM
-                CoUninitialize()
+                try:
+                    # Utilisation de pycaw pour régler directement le volume via l'API Windows
+                    devices = AudioUtilities.GetSpeakers()
+                    interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+                    volume = interface.QueryInterface(IAudioEndpointVolume)
+
+                    # Appliquer le volume
+                    volume.SetMasterVolumeLevelScalar(volume_level_normalized, None)
+                    logging.info(f"Volume réglé à {value}%")
+                finally:
+                    # Libérer COM
+                    CoUninitialize()
+            except ValueError:
+                logging.error("La valeur du volume n'est pas un nombre valide.")
         
         elif command == "set_brightness" and value is not None:
             logging.info(f"Réglage de la luminosité à {value}")
